@@ -39,7 +39,7 @@ npm install slider.js
 ```
 
 ```js
-import {Slider} from 'sliderjs'
+import {Slider} from 'slider.js'
 const slider = new Slider({
   container: 'container',
   visible_items: 1
@@ -48,6 +48,7 @@ const slider = new Slider({
 
 ## API
 `new sliderjs.Slider(options)`会初始化轮播组件并返回一个`Slider`实例。options选项：
+
 选项 | 类型 | 功能
 --- | --- | ---
 container | String \| HTMLElement | 指定轮播组件的容器
