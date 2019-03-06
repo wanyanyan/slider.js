@@ -1,0 +1,10 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "browserlist": ["last 2 versions", "ie 11"]
+      }
+    ]
+  ]
+}
