@@ -1,5 +1,5 @@
 ## 介绍
-  一个简单的轮播组件，纯js实现，不依赖任何前段框架。
+  一个简单的轮播组件，纯js实现，不依赖任何前端框架。
 ## 使用方法
 在使用slider.js之前，应该确保html页面有如下Dom结构，'container'为轮播组件的容器，不要改变其子元素的class和结构。
 ```html
@@ -46,9 +46,28 @@ const slider = new Slider({
 })
 ```
 
-## 参数说明
+## API
+`new sliderjs.Slider(options)`会初始化轮播组件并返回一个`Slider`实例。options选项：
+选项 | 类型 | 功能
+--- | --- | ---
+container | String \| HTMLElement | 指定轮播组件的容器
+visible_items | Number | 可见的条目数 - 默认：`1`
+scrolling_items | Number | 一次滚动的条目数 - 默认： `1`
+autoplay | boolean | 是否自动开始滚动 - 默认： `true`
+interval | Number | 每次滚动间隔，单位：ms - 默认：`3000`
 
-（待更新）
+Slider实例具有以下方法：
+#### `.pre()`
+切换上一个滚动条目
+
+#### `.next()`
+切换下一个滚动条目
+
+#### `.play()`
+开始自动播放
+
+#### `.stop()`
+停止自动播放
 
 ## 开发指南
 安装所有依赖：
