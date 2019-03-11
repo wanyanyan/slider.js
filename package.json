@@ -1,5 +1,5 @@
 {
-  "name": "slider.js",
+  "name": "@wanyanyan/slider.js",
   "version": "1.0.0",
   "description": "一个简单的多功能轮播组件，纯js实现",
   "main": "./src/index.js",
@@ -10,6 +10,10 @@
     "start": "webpack-dev-server --config build/webpack.dev.config.js",
     "lint": "eslint src/",
     "format": "prettier-eslint --write src/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wanyanyan/slider.js.git"
   },
   "author": "wanyanyan",
   "license": "ISC",

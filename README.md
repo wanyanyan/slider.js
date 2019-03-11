@@ -35,11 +35,11 @@
 ### 通过npm
 
 ```js
-npm install slider.js
+npm install @wanyanyan/slider.js
 ```
 
 ```js
-import {Slider} from 'slider.js'
+import {Slider} from '@wanyanyan/slider.js'
 const slider = new Slider({
   container: 'container',
   visible_items: 1
