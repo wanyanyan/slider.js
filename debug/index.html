@@ -9,37 +9,26 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      margin:0;
-      padding:0;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
     }
     #map{
       width: 100%;
       height: 100%;
     }
-    .sld-viewport{
-      position: relative;
-      overflow: hidden;
-    }
-    .sld-wrapper{
-      position: relative;
-      display: block;
-      margin: 0 auto;
-    }
     .sld-item{
-      width: 600px;
-      height: 40px;
+      width: 300px;
+      height: 200px;
       line-height: 40px;
       overflow: hidden;
       text-align: left;
       position: relative;
-      display: block;
-      cursor: pointer;
+      padding: 5px;
     }
     .sld-item img{
-      position: relative;
-      top: 5px;
-      margin-right: 10px;
+      width: 100%;
+      height: 100%;
     }
   </style>
   <script src='/dist/slider.js'></script>
@@ -49,23 +38,42 @@
     <div class="sld-viewport">
       <div class="sld-wrapper">
         <div class="sld-item">
-          <div>公告：政务地理空间大数据全力支持洋浦开发区建设1</div>
+          <img src="./images/1.jpg" alt="">
         </div>
         <div class="sld-item">
-          <div>公告：政务地理空间大数据全力支持洋浦开发区建设2</div>
+          <img src="./images/2.jpg" alt="">
+        </div>
+        <div class="sld-item">
+          <img src="./images/3.jpg" alt="">
+        </div>
+        <div class="sld-item">
+          <img src="./images/4.jpg" alt="">
+        </div>
+        <div class="sld-item">
+          <img src="./images/5.jpg" alt="">
         </div>
       </div>
     </div>
+    <button onclick="pre()">上一张</button>
+    <button onclick="next()">下一张</button>
   </div>
 
-<script type='text/javascript'>
-  window.onload = function() {
-    this.slider = new sliderjs.Slider()
-    this.slider.init({
-      container: 'map',
-      visible_items: 1
-    })
-  }
-</script>
+  <script type='text/javascript'>
+    window.onload = function() {
+      this.slider = new sliderjs.Slider({
+        container: 'map',
+        autoplay: false,
+        onClick: (e) => {
+          alert(e.index)
+        }
+      })
+    }
+    function pre() {
+      slider.pre()
+    }
+    function next() {
+      slider.next()
+    }
+  </script>
 </body>
 </html>

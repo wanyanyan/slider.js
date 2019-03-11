@@ -54,8 +54,10 @@ const slider = new Slider({
 container | String \| HTMLElement | 指定轮播组件的容器
 visible_items | Number | 可见的条目数 - 默认：`1`
 scrolling_items | Number | 一次滚动的条目数 - 默认： `1`
+orientation | String | 滚动方向，"horizontal"或者"vertical" - 默认： `horizontal`
 autoplay | boolean | 是否自动开始滚动 - 默认： `true`
 interval | Number | 每次滚动间隔，单位：ms - 默认：`3000`
+onClick | Function | 点击事件的回调函数，事件参数为{index: 0, originalEvent: mouseEvent} - 默认：`null`
 
 Slider实例具有以下方法：
 #### `.pre()`

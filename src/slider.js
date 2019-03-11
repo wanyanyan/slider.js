@@ -1,7 +1,21 @@
 import * as Util from './util'
+const defaultValue = {
+  container: null,
+  visible_items: 3,
+  scrolling_items: 1,
+  orientation: 'horizontal',
+  autoplay: true,
+  interval: 3000,
+  onClick: null
+}
 
-class TextSlider {
-  constructor() {
+class Slider {
+  constructor(options) {
+    options = Object.assign({}, defaultValue, options)
+    if (!options.container) {
+      throw new Error('未指定有效的"container"')
+    }
+    this.options = options
     this.index = 1   // 当前播放至第几张
     this.count = 0   // 总共有几张图片
     this.timer = null   // 计时器
@@ -10,70 +24,109 @@ class TextSlider {
     this.itemHeight = 0
     this.animated = false
     this.animationId = null
+    this.init()
   }
 
-  init(opts) {
-    let container = document.querySelector('#' + opts.container)
+  init() {
+    let container = document.querySelector('#' + this.options.container)
     let viewport = container.querySelector('.sld-viewport')
     this.wrapper = container.querySelector('.sld-wrapper')
     let items = this.wrapper.querySelectorAll('.sld-item')
     for (let i = 0; i < items.length; i++) {
       items[i].className += ' ' + (i + 1)
+      Util.css(items[i], {
+        display: 'block',
+        float: this.options.orientation === 'vertical' ? 'initial' : 'left'
+      })
+      if (this.options.onClick) {
+        items[i].onclick = e => {
+          this.options.onClick({index: i, originalEvent: e})
+        }
+      }
     }
     this.count = items.length
-    for (let i = 0; i < opts.visible_items; i++) {
+    for (let i = 0; i < this.options.visible_items; i++) {
       let node1 = items[i].cloneNode(true)
       this.wrapper.appendChild(node1)
       let node2 = items[this.count - 1 - i].cloneNode(true)
       this.wrapper.insertBefore(node2, this.wrapper.firstChild)
+      if (this.options.onClick) {
+        node1.onclick = e => {
+          this.options.onClick({index: i, originalEvent: e})
+        }
+        node2.onclick = e => {
+          this.options.onClick({index: this.count - 1 - i, originalEvent: e})
+        }
+      }
     }
-    let itemStyle = window.getComputedStyle(items[0], null)
-    this.itemWidth = Number(itemStyle.width.replace('px', '')) + Number(itemStyle.marginLeft.replace('px', '')) + Number(itemStyle.marginRight.replace('px', ''))
-    this.itemHeight = Number(itemStyle.height.replace('px', '')) + Number(itemStyle.marginTop.replace('px', '')) + Number(itemStyle.marginBottom.replace('px', ''))
-    Util.css(this.wrapper, {
-      width: this.itemWidth + 'px',
-      height: this.itemHeight * (this.count + opts.visible_items * 2) + 'px',
-      top: -this.itemHeight * opts.visible_items + 'px'
-    })
-    Util.css(viewport, {
-      width: this.itemWidth + 'px',
-      height: this.itemHeight * opts.visible_items + 'px',
+    let itemBbox = items[0].getBoundingClientRect()
+    this.itemWidth = itemBbox.width
+    this.itemHeight = itemBbox.height
+    let wrapperStyle = {
+      position: 'relative',
+      display: 'block',
+      margin: '0 auto'
+    }
+    let viewportStyle = {
+      position: 'relative',
       overflow: 'hidden'
-    })
-    this.play()
-    container.onmouseenter = this.stop.bind(this)
-    container.onmouseleave = this.play.bind(this)
+    }
+    if (this.options.orientation === 'vertical') {
+      Object.assign(wrapperStyle, {
+        width: this.itemWidth + 'px',
+        height: this.itemHeight * (this.count + this.options.visible_items * 2) + 'px',
+        top: -this.itemHeight * this.options.visible_items + 'px'
+      })
+      Object.assign(viewportStyle, {
+        width: this.itemWidth + 'px',
+        height: this.itemHeight * this.options.visible_items + 'px'
+      })
+    } else {
+      Object.assign(wrapperStyle, {
+        width: this.itemWidth * (this.count + this.options.visible_items * 2) + 'px',
+        height: this.itemHeight + 'px',
+        left: -this.itemWidth * this.options.visible_items + 'px'
+      })
+      Object.assign(viewportStyle, {
+        width: this.itemWidth * this.options.visible_items + 'px',
+        height: this.itemHeight + 'px'
+      })
+    } 
+    Util.css(this.wrapper, wrapperStyle)
+    Util.css(viewport, viewportStyle)
+    if (this.options.autoplay) {
+      this.play()
+      viewport.onmouseenter = this.stop.bind(this)
+      viewport.onmouseleave = this.play.bind(this)
+    }  
   }
 
   pre() {
     if (!this.animated) {
-      if (this.index == 1) {
-        this.index = this.count
-      } else {
-        this.index -= 1
+      this.index -= this.options.scrolling_items
+      if (this.index < 1) {
+        this.index = this.count + this.index
       }
-
-      //shownButton()
-      this._animate(this.itemHeight)
+      let offset = (this.options.orientation === 'vertical' ? this.itemHeight : this.itemWidth) * this.options.scrolling_items
+      this._animate(offset)
     }
   }
 
   next() {
     if (!this.animated) {
-      if (this.index == this.count) {
-        this.index = 1
-      } else {
-        this.index += 1
+      this.index += this.options.scrolling_items
+      if (this.index > this.count) {
+        this.index = this.index - this.count
       }
-      //shownButton()
-      this._animate(-this.itemHeight)
+      let offset = (this.options.orientation === 'vertical' ? this.itemHeight : this.itemWidth) * this.options.scrolling_items
+      this._animate(-offset)
     }
   }
 
   play () {
     this.timer = setInterval(() => {
       this.next()
-    }, 3000)
+    }, this.options.interval)
   }
 
   stop () {
@@ -85,20 +138,21 @@ class TextSlider {
     var inteval = 10
     var speed = offset / (time / inteval)
     this.animated = true
-    var newTop = parseFloat(this.wrapper.style.top) + offset
+    let direction = this.options.orientation === 'vertical' ? 'top' : 'left'
+    var newPosition = parseFloat(this.wrapper.style[direction]) + offset
     let go = () => {
-      if ((speed > 0 && parseFloat(this.wrapper.style.top) < newTop) || (speed < 0 && parseFloat(this.wrapper.style.top) > newTop)) {
-        this.wrapper.style.top = parseFloat(this.wrapper.style.top) + speed + 'px'
+      if (Math.abs(parseFloat(this.wrapper.style[direction]) - newPosition) > 0.5) {
+        this.wrapper.style[direction] = parseFloat(this.wrapper.style[direction]) + speed + 'px'
         this.animationId = requestAnimationFrame(go)
-      }
-      else {
+      } else {
         this.animated = false
         cancelAnimationFrame(this.animationId)
-        if (newTop > -this.itemHeight) {
-          this.wrapper.style.top = -(this.itemHeight * this.count) + "px"
+        let itemSize = this.options.orientation === 'vertical' ? this.itemHeight : this.itemWidth
+        if (Math.round(newPosition) > -itemSize) {
+          this.wrapper.style[direction] = Math.round(newPosition) - (itemSize * this.count) + 'px'
         }
-        if (newTop < -(this.itemHeight * this.count)) {
-          this.wrapper.style.top = -this.itemHeight + "px"
+        if (Math.round(newPosition) < -(itemSize * this.count)) {
+          this.wrapper.style[direction] = Math.round(newPosition) + (itemSize * this.count) + 'px'
         }
       }
     }
@@ -106,4 +160,4 @@ class TextSlider {
   }
 }
 
-export default TextSlider
+export default Slider

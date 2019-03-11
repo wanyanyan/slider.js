@@ -4,3 +4,7 @@ export const css = (el, css) => {
     el.style[k] = css[key]
   }
 }
+
+export const getElementOffset = (el, direction) => {
+  return Math.round(el.style[direction])
+}
