@@ -6,7 +6,8 @@ const defaultValue = {
   orientation: 'horizontal',
   autoplay: true,
   interval: 3000,
-  onClick: null
+  onClick: null,
+  onPlay: null
 }
 
 class Slider {
@@ -122,12 +123,22 @@ class Slider {
       this._animate(-offset)
     }
   }
+  
+  jumpTo(index) {
+    if (!this.animated) {
+      let offsetIndex = this.index - index
+      let offset = (this.options.orientation === 'vertical' ? this.itemHeight : this.itemWidth) * this.options.scrolling_items
+      this.index = index
+      this._animate(offsetIndex * offset)
+    }
+  }
 
   play () {
     this.timer = setInterval(() => {
       this.next()
     }, this.options.interval)
   }
+  
 
   stop () {
     clearInterval(this.timer)
@@ -157,6 +168,9 @@ class Slider {
       }
     }
     this.animationId = requestAnimationFrame(go)
+    if (this.options.onPlay) {
+      this.options.onPlay(this.index)
+    }
   }
 }
 
