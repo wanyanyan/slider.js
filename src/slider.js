@@ -60,9 +60,8 @@ class Slider {
         }
       }
     }
-    let itemBbox = items[0].getBoundingClientRect()
-    this.itemWidth = itemBbox.offsetWidth
-    this.itemHeight = itemBbox.offsetHeight
+    this.itemWidth = items[0].offsetWidth
+    this.itemHeight = items[0].offsetHeight
     let wrapperStyle = {
       position: 'relative',
       display: 'block',
